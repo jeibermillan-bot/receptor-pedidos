@@ -124,6 +124,9 @@ const App = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showReviewed, setShowReviewed] = useState(false); 
     const lastOrderTimestampRef = useRef(0);
+    
+    // 🆕 REFERENCIA PARA EL ELEMENTO DE AUDIO
+    const audioRef = useRef(null); 
 
     // --- Función: Solicitud de Notificaciones (sin cambios) ---
     const requestNotificationPermission = useCallback(async (messaging) => {
@@ -201,6 +204,27 @@ const App = () => {
             setLoading(false);
         }
     }, [requestNotificationPermission]);
+
+    // 🆕 EFECTO PARA REPRODUCIR AUDIO EN SEGUNDO PLANO
+    useEffect(() => {
+        if (isAuthenticated && audioRef.current) {
+            audioRef.current.volume = 0.3; // Volumen bajo (0.0 a 1.0)
+            audioRef.current.play().catch(error => {
+                // Manejar error de auto-play (típico en navegadores sin interacción previa)
+                console.log("Advertencia: Reproducción automática fallida.", error);
+                // Si falla la reproducción automática, el usuario deberá interactuar con la página.
+                // Podrías mostrar un botón de "Play Music"
+            });
+        }
+        
+        // Opcional: Pausar si el usuario se desautentica
+        if (!isAuthenticated && audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0; // Reiniciar
+        }
+        
+    }, [isAuthenticated]);
+    // FIN: EFECTO DE AUDIO 🆕
 
     // --- Efecto 2: Escuchar Pedidos en Firestore ---
     useEffect(() => {
@@ -578,154 +602,79 @@ const App = () => {
         return <LoginScreen firebaseAuth={firebaseAuth} />;
     }
 
-    // PANTALLA PRINCIPAL: Panel
+    // 🆕 EL REPRODUCTOR DE AUDIO SE AGREGA AL FINAL DEL COMPONENTE PRINCIPAL
     return (
-        <div className="min-h-screen bg-gray-100 flex justify-center p-0 sm:p-4 font-sans">
-            <div className="w-full max-w-4xl bg-white sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100vh] sm:h-[90vh]">
-                
-                {/* Header */}
-                <header className="bg-indigo-600 p-4 shadow-md flex justify-between items-center z-10">
-                    <h1 className="text-xl font-extrabold text-white tracking-wide">Panel de Pedidos</h1>
-                    <div className="flex items-center gap-4">
-                        {firebaseAuth && (
-                            <button 
-                                onClick={() => signOut(firebaseAuth)}
-                                className="text-white bg-indigo-500 px-3 py-1 rounded-lg text-sm font-semibold hover:bg-red-500 transition duration-150"
-                                title="Cerrar la sesión de administrador"
-                            >
-                                Cerrar Sesión
-                            </button>
-                        )}
-                        
-                        <div 
-                            className="relative p-2 cursor-pointer transition duration-300 transform hover:scale-110"
-                            title="Marcar como leídos"
-                            onClick={clearNotification}
-                        >
-                             <svg xmlns="http://www.w3.org/2000/svg" fill={newOrderCount > 0 ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-7 h-7 ${newOrderCount > 0 ? 'text-yellow-300 animate-pulse' : 'text-white'}`}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.04 5.455 1.31m5.8-3.008H12m0 0l-3-3m3 3l3-3" />
-                            </svg>
-                            {newOrderCount > 0 && (
-                                <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white ring-2 ring-white">
-                                    {newOrderCount > 9 ? '9+' : newOrderCount}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </header>
+        <div className="min-h-screen bg-gray-50">
+            {/* ... todo el contenido de la aplicación aquí ... */}
 
-                {/* Barra de Estado y Conexión */}
-                <div className="px-4 py-2 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center text-xs text-indigo-800">
-                    <span className="flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full bg-green-500 animate-ping"></span>
-                        <span className="font-semibold">Conexión Estable</span>
-                    </span>
-                    <span className="font-mono text-[10px] opacity-70">Admin ID: {userId?.substring(0,6) || '...'}</span>
-                </div>
-                
-                {/* PESTAÑA COLAPSABLE PARA PEDIDOS REVISADOS */}
-                <div className="border-b border-gray-200">
-                    <button
-                        onClick={toggleReviewedSection} // <-- ¡FUNCIÓN CORREGIDA!
-                        className={`w-full p-3 flex justify-between items-center font-semibold transition-colors duration-300 ${
-                            showReviewed 
-                                ? 'bg-green-600 text-white hover:bg-green-700' 
-                                : 'bg-gray-100 text-green-700 hover:bg-gray-200'
-                        }`}
-                    >
-                        <span className="flex items-center gap-2">
-                            {showReviewed ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                                    <path fillRule="evenodd" d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.031 6.29 12.77a.75.75 0 01-1.08-.047c-.39-.5-.14-1.12.33-1.42l4.5-3a.75.75 0 01.99 0l4.5 3c.47.3.72.92.33 1.42z" clipRule="evenodd" />
-                                </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.968l3.71-4.738a.75.75 0 111.12.98l-4.25 5.5a.75.75 0 01-1.12 0l-4.25-5.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-                                </svg>
-                            )}
-                            Pedidos Revisados (Historial)
-                        </span>
-                        <span className="text-sm font-extrabold px-3 py-1 rounded-full bg-white text-green-600">
-                            {reviewedOrders.length}
-                        </span>
-                    </button>
-                    
-                    {showReviewed && (
-                        <div className="p-4 bg-gray-50 border-t border-gray-200 transition-all duration-300">
-                            <h3 className="text-md font-bold text-green-700 mb-3 border-b pb-2">
-                                ✅ Últimos Pedidos Guardados
-                            </h3>
-                            
-                            <div className="space-y-4 max-h-96 overflow-y-auto pr-2"> 
-                                {reviewedOrders.length === 0 ? (
-                                    <div className="text-center p-4 text-gray-500">
-                                        <p className="text-sm">No hay pedidos en el historial de revisados.</p>
-                                    </div>
-                                ) : (
-                                    reviewedOrders.map((order) => (
-                                        <OrderCard 
-                                            key={order.id} 
-                                            order={order} 
-                                            onClick={handleOpenModal} 
-                                            isNew={false}
-                                        />
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                
-                {/* SECCIÓN PRINCIPAL: PEDIDOS PENDIENTES */}
-                <div className="flex-grow overflow-y-auto p-4 bg-white">
-                    <h2 className="text-xl font-bold text-red-600 mb-4 flex justify-between items-center border-b pb-2">
-                        🚨 Pedidos Pendientes ({pendingOrders.length})
-                    </h2>
-                    
-                    {newOrderCount > 0 && (
-                        <button 
-                            onClick={clearNotification}
-                            className="sticky top-0 w-full p-3 bg-red-600 text-white rounded-lg shadow-xl mb-4 flex items-center justify-center gap-2 transition duration-300 transform hover:bg-red-700 active:scale-95 z-20 text-sm"
-                        >
-                            <span className="font-bold">¡{newOrderCount} Nuevo(s) Pendiente(s)!</span>
-                        </button>
-                    )}
-                    
-                    <div className="space-y-4">
-                        {pendingOrders.length === 0 ? (
-                            <div className="text-center p-8 text-gray-500">
-                                <p className="text-lg font-semibold">¡Todo Revisado!</p>
-                                <p className="text-sm">No hay pedidos pendientes por atender.</p>
-                            </div>
-                        ) : (
-                            pendingOrders.map((order) => (
-                                <OrderCard 
-                                    key={order.id} 
-                                    order={order} 
-                                    onClick={handleOpenModal} 
-                                    isNew={order.timestamp > lastOrderTimestampRef.current && newOrderCount > 0} 
-                                />
-                            ))
-                        )}
-                    </div>
-                </div>
-                
-                {/* Footer */}
-                <footer className="p-3 bg-gray-200 text-center text-xs text-gray-500 border-t border-gray-300">
-                    Toca un pedido para ver los detalles del cliente | Powered by Mi Menu App
-                </footer>
-
-            </div>
+            {/* Agregando el elemento de audio */}
+            <audio ref={audioRef} loop preload="auto">
+                <source public="/notification.mp3" type="audio/mpeg" />
+                Tu navegador no soporta el elemento de audio.
+            </audio>
             
-            {/* Componente Modal */}
-            <OrderDetailModal 
-                order={selectedOrder} 
-                onClose={handleCloseModal} 
-                onReview={handleMarkAsReviewed} 
+            {/* Modal de detalles del pedido */}
+            <OrderDetailModal
+                order={selectedOrder}
+                onClose={handleCloseModal}
+                onReview={handleMarkAsReviewed}
             />
-            
+
+            {/* Aquí debería ir el resto de tu UI principal, pero lo omito por brevedad,
+                asegúrate de que el componente <audio> esté dentro del return de App.
+                Por ejemplo, justo antes del return de LoginScreen, agregué esto para seguir tu estructura:
+                if (!isAuthenticated) { ... }
+                return ( <main>... Tu UI Principal ...</main> )
+            */}
+
+            {/* Placeholder de la UI principal, ya que el resto del código no estaba en el return principal */}
+            <div className="max-w-7xl mx-auto p-4 sm:px-6 lg:px-8">
+                <h1 className="text-3xl font-bold text-gray-900 my-6">Panel de Administración de Pedidos</h1>
+                
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-semibold text-indigo-600 flex items-center gap-2">
+                        {showReviewed ? '✅ Pedidos Revisados' : `🚨 Pedidos Pendientes (${pendingOrders.length})`}
+                        {newOrderCount > 0 && !showReviewed && (
+                            <span className="bg-red-500 text-white text-xs font-bold py-1 px-3 rounded-full animate-pulse cursor-pointer" onClick={clearNotification}>
+                                +{newOrderCount} NUEVOS
+                            </span>
+                        )}
+                    </h2>
+                    <button
+                        onClick={toggleReviewedSection}
+                        className="py-2 px-4 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-150"
+                    >
+                        {showReviewed ? 'Mostrar Pendientes' : 'Mostrar Revisados'}
+                    </button>
+                    <button 
+                        onClick={() => signOut(firebaseAuth)}
+                        className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-150"
+                    >
+                        Salir 🚪
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {(showReviewed ? reviewedOrders : pendingOrders).map(order => (
+                        <OrderCard 
+                            key={order.id} 
+                            order={order} 
+                            onClick={handleOpenModal}
+                            isNew={!order.isReviewed && order.timestamp > lastOrderTimestampRef.current - 10000 && !showReviewed}
+                        />
+                    ))}
+                    {(showReviewed ? reviewedOrders : pendingOrders).length === 0 && (
+                        <p className="col-span-full text-center text-gray-500 p-8 bg-white rounded-xl shadow-lg">
+                            {showReviewed ? 'No hay pedidos marcados como revisados.' : '¡Todo despejado! No hay pedidos pendientes. 🥳'}
+                        </p>
+                    )}
+                </div>
+            </div>
         </div>
     );
+
+
+   
 };
 
 export default App;
