@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-exclude
+   for details about the syntax for this file.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Excluir todas las preferencias compartidas para evitar que los datos de Capacitor se guarden -->
+        <!-- La línea <exclude domain="sharedpref" path="."/> es la que estaba causando el error. -->
+        <!-- Aquí puedes simplemente dejar vacío si quieres incluir todo lo que no sea caché, o dejar una regla específica. -->
+    </cloud-backup>
+    <!-- Si no tienes reglas específicas para el backup de dispositivo a dispositivo, puedes dejarlo vacío. -->
+    <device-transfer>
+    </device-transfer>
+</data-extraction-rules>

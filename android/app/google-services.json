@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "947666434839",
+    "project_id": "mi-menu-app-9c084",
+    "storage_bucket": "mi-menu-app-9c084.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947666434839:android:ee10d6f883f5574b1f9552",
+        "android_client_info": {
+          "package_name": "com.pedidosuperpollo.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947666434839-om7rk3sf45pifa20ujcsrtag589q6isq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATQhNYdceIhbfIfOVPUYLOqNmFBMLpEbw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947666434839-om7rk3sf45pifa20ujcsrtag589q6isq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

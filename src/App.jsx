@@ -259,7 +259,7 @@ const App = () => {
                     items: data.items || [], 
                     timestamp: timestampMillis,
                     direccion: data.customerAddress || 'No especificada',
-                    telefono: data.WS || 'No disponible',
+                    telefono:data.customerPhone || data.WS || 'No disponible',
                     metodoPago: data.paymentMethod || 'No especificado',
                     notasPedido: data.orderNotes || 'Sin notas adicionales',
                     isReviewed: data.isReviewed || false, 

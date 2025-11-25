@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Define the files and directories that should be excluded from Auto Backup.
+    More information at: https://developer.android.com/about/versions/12/backup-restore#xml-exclude
+-->
+<full-backup-content>
+    <!-- Excluir bases de datos y preferencias compartidas (solo si las estás excluyendo en data_extraction_rules) -->
+    <!-- Como Capacitor gestiona el almacenamiento, generalmente excluimos cosas temporales. -->
+    
+    <!-- El dominio 'cache' ya no es válido, lo eliminamos. -->
+    
+    <!-- Regla de exclusión general y válida (Excluye bases de datos, pero el archivo base no tiene esta necesidad). -->
+    <!-- Si no tienes necesidades específicas de exclusión, puedes usar el contenido por defecto: -->
+    <exclude domain="sharedpref" path="CapacitorPrefs.xml"/>
+</full-backup-content>

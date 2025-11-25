@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Nombre real que aparecerá en el teléfono -->
+    <string name="app_name">Pedido Súper Pollo</string>
+
+    <!-- Título principal de la actividad -->
+    <string name="title_activity_main">Pedido Súper Pollo</string>
+
+    <!-- Debe coincidir EXACTO con tu package -->
+    <string name="package_name">com.pedidosuperpollo.app</string>
+
+    <!-- Esquema de URL que Capacitor usa para abrir enlaces -->
+    <string name="custom_url_scheme">com.pedidosuperpollo.app</string>
+
+</resources>
