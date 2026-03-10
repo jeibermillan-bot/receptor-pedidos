@@ -128,6 +128,24 @@ const App = () => {
     // 🆕 REFERENCIA PARA EL ELEMENTO DE AUDIO
     const audioRef = useRef(null); 
 
+function beep() {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  oscillator.frequency.value = 1000;
+  oscillator.type = "sine";
+
+  oscillator.start();
+
+  setTimeout(() => {
+    oscillator.stop();
+  }, 200);
+}
+
     // --- Función: Solicitud de Notificaciones (sin cambios) ---
     const requestNotificationPermission = useCallback(async (messaging) => {
         try {
@@ -287,9 +305,14 @@ const App = () => {
             setPendingOrders(newPendingOrders); 
             setReviewedOrders(newReviewedOrders); 
             
-            if (!isInitialLoad && newOrdersSinceLastLoad > 0) {
-                setNewOrderCount(prev => prev + newOrdersSinceLastLoad);
-            }
+           if (!isInitialLoad && newOrdersSinceLastLoad > 0) {
+    setNewOrderCount(prev => prev + newOrdersSinceLastLoad);
+
+    // 🔔 SONIDO CUANDO LLEGA PEDIDO
+    beep();
+    setTimeout(beep, 200);
+    setTimeout(beep, 400);
+}
 
             if (currentMaxTimestamp > lastOrderTimestampRef.current) {
                 lastOrderTimestampRef.current = currentMaxTimestamp;
